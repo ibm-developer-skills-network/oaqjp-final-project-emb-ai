@@ -1,1 +1,1 @@
-# coding-project-template
+# Repository for final project
