@@ -24,8 +24,6 @@ def emotion_detector(text_to_analyse):
             'dominant_emotion': dominant_emotion
         }
     elif response.status_code == 400:
-        emotion_predictor = formatted_response['emotionPredictions'][0]['emotion']
-        dominant_emotion = max(emotion_predictor, key = emotion_predictor.get)
         return {
             'anger': None,
             'disgust': None,
