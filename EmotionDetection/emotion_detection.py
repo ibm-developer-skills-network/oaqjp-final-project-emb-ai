@@ -12,9 +12,12 @@ def emotion_detector(text_to_analyse):
     response = requests.post(url, json = myobj, headers = header)
     formatted_response = json.loads(response.text)
 
+    if not text_to_analyse.strip():  # Check for empty or blank input
+        return None    
+
     if response.status_code == 200:
         emotion_predictor = formatted_response['emotionPredictions'][0]['emotion']
-        dominant_emotion = max(emotion_predictor, key = emotion_predictor.get)
+        dominant_emotion = max(emotion_predictor.items(), key=lambda x: x[1])[0]
         return {
             'anger': emotion_predictor['anger'],
             'disgust': emotion_predictor['disgust'],
