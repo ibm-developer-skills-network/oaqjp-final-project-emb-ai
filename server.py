@@ -18,18 +18,20 @@ def emot_detector():
         text.
     '''
     text_to_analyze = request.args.get('textToAnalyze')
-    
+
     dominant_emotion = emotion_detector(text_to_analyze)
     if dominant_emotion is None:
         return 'Invalid text! Please try again.'
-    else:
-        # Create a formatted string for emotion scores
-        emotion_scores_str = ', '.join([f"'{emotion}': {score}" for emotion, score in dominant_emotion.items() if emotion != 'dominant_emotion'])
 
-        # Add the dominant emotion separately
-        response = f'For the given statement, the system response is {emotion_scores_str}. The dominant emotion is \'{dominant_emotion["dominant_emotion"]}\'.'
+    # Create a formatted string for emotion scores
+    emotion_scores_str = ', '.join([f"'{emotion}': {score}" for emotion, score in\
+    dominant_emotion.items() if emotion != 'dominant_emotion'])
 
-        return response
+    # Add the dominant emotion separately
+    response = f'For the given statement, the system response is {emotion_scores_str}.\
+    The dominant emotion is \'{dominant_emotion["dominant_emotion"]}\'.'
+
+    return response
 
 @app.route("/")
 def render_index_page():
