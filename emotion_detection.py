@@ -1,29 +1,53 @@
-import json
 import requests
+import json
 
 def emotion_detector(text_to_analyze):
-    if not text_to_analyze or text_to_analyze.strip() == "":
+    # بررسی خالی بودن متن ورودی
+    if not text_to_analyze or not text_to_analyze.strip():
         return {
-            'document': None, 'anger': None, 'disgust': None, 'fear': None,
-            'joy': None, 'sadness': None, 'dominant_emotion': None, 'status_code': 400
+            'anger': None,
+            'disgust': None,
+            'fear': None,
+            'joy': None,
+            'sadness': None,
+            'dominant_emotion': None
         }
 
     url = 'https://sn-watson-emotion.labs.skills.network/v1/watson.runtime.nlp.v1/NlpService/EmotionPredict'
-    headers = {"grpc-metadata-mm-model-id": "emotion_aggregated-workflow_lang_en_stock"}
     myobj = { "raw_document": { "text": text_to_analyze } }
-    response = requests.post(url, json=myobj, headers=headers)
+    header = {"grpc-metadata-mm-model-id": "accenture_smart_reply_emotion_stock_model_1"}
     
-    formatted_response = json.loads(response.text)
+    response = requests.post(url, json=myobj, headers=header)
+    
+    # مدیریت خطای سرور (کد وضعیت 400)
+    if response.status_code == 400:
+        return {
+            'anger': None,
+            'disgust': None,
+            'fear': None,
+            'joy': None,
+            'sadness': None,
+            'dominant_emotion': None
+        }
+
+    formatted_response = response.json()
+    
+    # استخراج امتیاز احساسات از پاسخ API
     emotions = formatted_response['emotionPredictions'][0]['emotion']
+    anger_score = emotions['anger']
+    disgust_score = emotions['disgust']
+    fear_score = emotions['fear']
+    joy_score = emotions['joy']
+    sadness_score = emotions['sadness']
     
-    anger = emotions['anger']
-    disgust = emotions['disgust']
-    fear = emotions['fear']
-    joy = emotions['joy']
-    sadness = emotions['sadness']
+    # پیدا کردن احساس غالب (بیشترین امتیاز)
     dominant_emotion = max(emotions, key=emotions.get)
     
     return {
-        'anger': anger, 'disgust': disgust, 'fear': fear,
-        'joy': joy, 'sadness': sadness, 'dominant_emotion': dominant_emotion
+        'anger': anger_score,
+        'disgust': disgust_score,
+        'fear': fear_score,
+        'joy': joy_score,
+        'sadness': sadness_score,
+        'dominant_emotion': dominant_emotion
     }
